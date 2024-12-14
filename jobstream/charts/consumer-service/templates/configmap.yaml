@@ -11,7 +11,7 @@ data:
   SPRING_KAFKA_CONSUMER_GROUP_ID: "job-offer-created-events"
   SPRING_KAFKA_CONSUMER_PROPERTIES_SPRING_JSON_TRUSTED_PACKAGES: "*"
   TOPIC_KAFKA_NAME: "job-offer-events-topic"
-  SPRING_DATASOURCE_URL: "jdbc:mysql://mysql:3306/jobstream"
+  SPRING_DATASOURCE_URL: "jdbc:mysql://mysql.jobstream:3306/jobstream"
   SPRING_DATASOURCE_USERNAME: "root"
   SPRING_DATASOURCE_PASSWORD: "r00t"
   SPRING_DATASOURCE_DRIVER_CLASS_NAME: "com.mysql.cj.jdbc.Driver"

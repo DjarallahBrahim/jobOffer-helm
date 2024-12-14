@@ -8,7 +8,7 @@ data:
   SPRING_APPLICATION_NAME: "kafka-ws"
   SPRING_KAFKA_PRODUCER_BOOTSTRAP_SERVERS: "kafka-service:9092"
   SPRING_KAFKA_BOOTSTRAP_SERVERS: "kafka-service:9092"
-  SPRING_DATASOURCE_URL: "jdbc:mysql://mysql:3306/jobstream"
+  SPRING_DATASOURCE_URL: "jdbc:mysql://mysql.jobstream:3306/jobstream"
   SERVER_PORT: "8080"
   MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: "*"
   SPRING_KAFKA_PRODUCER_KEY_SERIALIZER: "org.apache.kafka.common.serialization.StringSerializer"
