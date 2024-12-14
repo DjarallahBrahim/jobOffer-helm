@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "producer-service-fullName" . }}
+  name: {{ include "consumer-service-fullName" . }}
   labels:
-    app: {{ include "producer-service-fullName" . }}
+    app: {{ include "consumer-service-fullName" . }}
 spec:
   replicas: {{ .Values.advanced.replicaCount }}
   selector:
     matchLabels:
-      app: {{ include "producer-service-fullName" . }}
+      app: {{ include "consumer-service-fullName" . }}
   template:
     metadata:
       labels:
-        app: {{ include "producer-service-fullName" . }}
+        app: {{ include "consumer-service-fullName" . }}
     spec:
       containers:
-        - name: {{ include "producer-service-fullName" . }}
+        - name: {{ include "consumer-service-fullName" . }}
           image: {{ .Values.advanced.image.repository }}:{{ .Values.advanced.image.tag }}
           imagePullPolicy: Always
           resources:
@@ -28,6 +28,6 @@ spec:
 
           envFrom:
             - configMapRef:
-                name: {{ include "producer-service-fullName" . }}-configmap
+                name: {{ include "consumer-service-fullName" . }}-configmap
           ports:
             - containerPort: 8080

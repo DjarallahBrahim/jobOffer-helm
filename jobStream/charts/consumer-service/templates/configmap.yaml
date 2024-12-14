@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "consumer-service-fullName" . }}-configmap
+  labels:
+    app: {{ include "consumer-service-fullName" . }}
+data:
+  SPRING_APPLICATION_NAME: "joboffer consumer"
+  SERVER_PORT: "8089"
+  SPRING_KAFKA_CONSUMER_BOOTSTRAP_SERVERS: "kafka-service:9092"
+  SPRING_KAFKA_CONSUMER_GROUP_ID: "job-offer-created-events"
+  SPRING_KAFKA_CONSUMER_PROPERTIES_SPRING_JSON_TRUSTED_PACKAGES: "*"
+  TOPIC_KAFKA_NAME: "job-offer-events-topic"
+  SPRING_DATASOURCE_URL: "jdbc:mysql://mysql:3306/jobstream"
+  SPRING_DATASOURCE_USERNAME: "root"
+  SPRING_DATASOURCE_PASSWORD: "r00t"
+  SPRING_DATASOURCE_DRIVER_CLASS_NAME: "com.mysql.cj.jdbc.Driver"
+  SPRING_JPA_HIBERNATE_DDL_AUTO: "validate"
+  SPRING_JPA_SHOW_SQL: "true"
+  SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: "org.hibernate.dialect.MySQLDialect"
+  SPRING_MAIL_HOST: "smtp.gmail.com"
+  SPRING_MAIL_PORT: "587"
+  SPRING_MAIL_USERNAME: "senderjoboffer@gmail.com"
+  SPRING_MAIL_PASSWORD: "ylyo yslg gbqq yhdg"
+  SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH: "true"
+  SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE: "true"
+  logging.level.org.apache.kafka: "INFO"
+  logging.level.org.springframework.kafka: "INFO"

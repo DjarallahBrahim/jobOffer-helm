@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "front-service-fullName" . }}
+  labels:
+    app: {{ include "front-service-fullName" . }}
+spec:
+  replicas: {{ .Values.advanced.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "front-service-fullName" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "front-service-fullName" . }}
+    spec:
+      containers:
+        - name: frontend
+          image: {{ .Values.advanced.image.repository }}:{{ .Values.advanced.image.tag }}
+          imagePullPolicy: {{ .Values.advanced.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.advanced.service.targetPort }}
+          envFrom:
+          - configMapRef:
+              name: {{ include "front-service-fullName" . }}-configmap
+          resources:
+            limits:
+              cpu: {{ .Values.advanced.resources.limits.cpu }}
+              memory: {{ .Values.advanced.resources.limits.memory }}
+            requests:
+              cpu: {{ .Values.advanced.resources.requests.cpu }}
+              memory: {{ .Values.advanced.resources.requests.memory }}

@@ -9,3 +9,7 @@ dependencies:
     version: 1.0.0
   - name: producer-service
     version: 1.0.0
+  - name: consumer-service
+    version: 1.0.0
+  - name: front-service
+    version: 1.0.0

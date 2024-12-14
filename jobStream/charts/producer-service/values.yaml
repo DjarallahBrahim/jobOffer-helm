@@ -1,5 +1,5 @@
 advanced:
-  replicaCount: 2
+  replicaCount: 1
   image:
     repository: djarallahbrahim/job-offer-producer-ws
     tag: main

@@ -1,0 +1,6 @@
+advanced:
+  replicaCount: 1
+  image:
+    repository: djarallahbrahim/job-offer-consumer-ws
+    tag: main
+    pullPolicy: IfNotPresent
