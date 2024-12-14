@@ -1,0 +1,9 @@
+advanced:
+  replicaCount: 1
+
+  image:
+    repository: bitnami/kafka
+    tag: latest
+    pullPolicy: IfNotPresent
+  storage:
+    size: "1Gi"

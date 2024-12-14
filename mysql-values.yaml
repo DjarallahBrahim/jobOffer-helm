@@ -1,0 +1,22 @@
+image:
+  tag: 8.0.32
+
+auth:
+  rootPassword: "root"
+
+primary:
+  persistence:
+    enabled: true
+    existingClaim: "mysql-pvc"
+  startupProbe:
+    enabled: false
+  readinessProbe:
+    enabled: false
+  livenessProbe:
+    enabled: false
+
+volumePermissions:
+  enabled: true
+
+secondary:
+  replicaCount: 0

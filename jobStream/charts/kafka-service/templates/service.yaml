@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "kafka-service-fullName" . }}
+  labels:
+    app: {{ include "kafka-service-fullName" . }}
+spec:
+  selector:
+    app: {{ include "kafka-service-fullName" . }}
+  ports:
+    - protocol: TCP
+      port: 9090
+      targetPort: 9090
+      name: kafka-metrics  # Used for exposing Kafka metrics (commonly Prometheus metrics)
+    - protocol: TCP
+      port: 9091
+      targetPort: 9091
+      name: kafka-rest  # Used for Kafka REST API if applicable
+    - protocol: TCP
+      port: 9092
+      targetPort: 9092
+      name: kafka-broker  # Default port for Kafka broker communication
+
+  type: ClusterIP
+

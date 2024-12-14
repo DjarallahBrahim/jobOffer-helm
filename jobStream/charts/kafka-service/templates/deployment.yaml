@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "kafka-service-fullName" . }}
+  labels:
+    app: {{ include "kafka-service-fullName" . }}
+spec:
+  replicas: {{ .Values.advanced.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "kafka-service-fullName" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "kafka-service-fullName" . }}
+    spec:
+      securityContext:
+        runAsUser: 1001
+        fsGroup: 1001
+      containers:
+      - name: kafka
+        image: {{ .Values.advanced.image.repository }}:{{ .Values.advanced.image.tag }}
+        imagePullPolicy: Always
+        resources:
+          requests:
+            cpu: 500m        # Minimum CPU requested for proper performance
+            memory: 1Gi      # Minimum memory to handle Kafka's JVM and basic workload
+          limits:
+            cpu: 1           # Maximum CPU allowed
+            memory: 2Gi      # Maximum memory for high workloads
+
+        envFrom:
+          - configMapRef:
+              name: {{ include "kafka-service-fullName" . }}-configmap
+        
+        ports:
+          - containerPort: 9090
+          - containerPort: 9091
+          - containerPort: 9092
+        volumeMounts:
+          - name: kafka-tmp-storage
+            mountPath: /bitnami/kafka
+      volumes:
+        - name: kafka-tmp-storage
+          emptyDir: {}

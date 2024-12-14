@@ -1,0 +1,178 @@
+---
+# Source: jobstream/charts/kafka-service/templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kafka-service-configmap
+  labels:
+    app: kafka-service
+data:
+  KAFKA_CFG_NODE_ID: "1"
+  KAFKA_KRAFT_CLUSTER_ID: "tF0HTgFQTO-xH1eBLFOpLg"
+  KAFKA_CFG_PROCESS_ROLES: "controller,broker"
+  KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: "1@kafka-service.kafka-namespace.svc.cluster.local:9091"
+  KAFKA_CFG_LISTENERS: "PLAINTEXT://:9090,CONTROLLER://:9091,EXTERNAL://:9092"
+  KAFKA_CFG_ADVERTISED_LISTENERS: "PLAINTEXT://kafka-service.kafka-namespace.svc.cluster.local:9090,EXTERNAL://kafka-service.kafka-namespace.svc.cluster.local:9092"
+  KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: "CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT,PLAINTEXT:PLAINTEXT"
+  KAFKA_CFG_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
+  KAFKA_CFG_INTER_BROKER_LISTENER_NAME: "PLAINTEXT"
+---
+# Source: jobstream/charts/producer-service/templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: producer-service-configmap
+  labels:
+    app: producer-service
+data:
+  SPRING_KAFKA_PRODUCER_BOOTSTRAP_SERVERS: kafka.service.jobstream:9092
+  SPRING_KAFKA_PRODUCER_KEY_SERIALIZER: org.apache.kafka.common.serialization.StringSerializer
+  SPRING_KAFKA_PRODUCER_VALUE_SERIALIZER: org.springframework.kafka.support.serializer.JsonSerializer
+  SPRING_KAFKA_PRODUCER_ENABLE_IDEMPOTENCE: "true"
+  SPRING_KAFKA_PRODUCER_MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION: "5"
+  SPRING_KAFKA_PRODUCER_ACKS: all
+  SPRING_KAFKA_PRODUCER_PROPERTIES_LINGER_MS: "0"
+  SPRING_KAFKA_PRODUCER_PROPERTIES_REQUEST_TIMEOUT_MS: "30000"
+  SPRING_KAFKA_PRODUCER_PROPERTIES_DELIVERY_TIMEOUT_MS: "120000"
+---
+# Source: jobstream/charts/kafka-service/templates/pv.yaml
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: kafka-service-pv
+spec:
+  accessModes:
+    - ReadWriteOnce
+  capacity:
+    storage: 1Gi
+  storageClassName: standard
+---
+# Source: jobstream/charts/kafka-service/templates/pvc.yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: kafka-service-pvc
+  labels:
+    app: kafka-service
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 500mi
+---
+# Source: jobstream/charts/kafka-service/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka-service
+  labels:
+    app: kafka-service
+spec:
+  selector:
+    app: kafka-service
+  ports:
+    - protocol: TCP
+      port: 9090
+      targetPort: 9090
+    - protocol: TCP
+      port: 9091
+      targetPort: 9091
+    - protocol: TCP
+      port: 9092
+      targetPort: 9092
+  type: ClusterIP
+---
+# Source: jobstream/charts/producer-service/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: producer-service
+  labels:
+    app: producer-service
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8080
+      targetPort: 8080
+  selector:
+    app: producer-service
+---
+# Source: jobstream/charts/kafka-service/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafka-service
+  labels:
+    app: kafka-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kafka-service
+  template:
+    metadata:
+      labels:
+        app: kafka-service
+    spec:
+      containers:
+      - name: kafka
+        image: bitnami/kafka:latest
+        imagePullPolicy: Always
+        resources:
+          requests:
+            cpu: "500m"        # Minimum CPU requested for proper performance
+            memory: "1Gi"      # Minimum memory to handle Kafka's JVM and basic workload
+          limits:
+            cpu: "1"           # Maximum CPU allowed
+            memory: "2Gi"      # Maximum memory for high workloads
+
+        envFrom:
+          - configMapRef:
+              name: kafka-service-configmap
+        
+        ports:
+          - containerPort: 9090
+          - containerPort: 9091
+          - containerPort: 9092
+        volumeMounts:
+          - mountPath: /bitnami/kafka
+            name: kafka-volume
+      volumes:
+        - name: kafka-volume
+          persistentVolumeClaim:
+            claimName: kafka-service-pvc
+---
+# Source: jobstream/charts/producer-service/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: producer-service
+  labels:
+    app: producer-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: producer-service
+  template:
+    metadata:
+      labels:
+        app: producer-service
+    spec:
+      containers:
+        - name: producer-service
+          image: djarallahbrahim/job-offer-producer-ws:main
+          resources:
+            requests:
+              cpu: "500m"        # Minimum CPU requested for proper performance
+              memory: "500mi"      # Minimum memory to handle Kafka's JVM and basic workload
+            limits:
+              cpu: "1"           # Maximum CPU allowed
+              memory: "1Gi"      # Maximum memory for high workloads
+
+          envFrom:
+            - configMapRef:
+                name: producer-service-configmap
+          ports:
+            - containerPort: 8080

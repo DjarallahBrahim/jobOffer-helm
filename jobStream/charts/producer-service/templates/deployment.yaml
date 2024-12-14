@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "producer-service-fullName" . }}
+  labels:
+    app: {{ include "producer-service-fullName" . }}
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: {{ include "producer-service-fullName" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "producer-service-fullName" . }}
+    spec:
+      containers:
+        - name: {{ include "producer-service-fullName" . }}
+          image: {{ .Values.advanced.image.repository }}:{{ .Values.advanced.image.tag }}
+          resources:
+            requests:
+              cpu: "500m"        # Minimum CPU requested for proper performance
+              memory: "500Mi"      # Minimum memory to handle Kafka's JVM and basic workload
+            limits:
+              cpu: "1"           # Maximum CPU allowed
+              memory: "1Gi"      # Maximum memory for high workloads
+
+          envFrom:
+            - configMapRef:
+                name: {{ include "producer-service-fullName" . }}-configmap
+          ports:
+            - containerPort: 8080

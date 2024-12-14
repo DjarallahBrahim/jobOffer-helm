@@ -1,0 +1,10 @@
+advanced:
+  replicaCount: 2
+  image:
+    repository: djarallahbrahim/job-offer-producer-ws
+    tag: main
+    pullPolicy: IfNotPresent
+
+  service:
+    port: 8080
+    name: producer-service
