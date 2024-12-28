@@ -14,5 +14,5 @@ dependencies:
   - name: front-service
     version: 1.0.0
   - name: nginx-ingress
-    version: stable
-    repository: https://helm.nginx.com
+    version: 2.0.0
+    repository: https://helm.nginx.com/stable
